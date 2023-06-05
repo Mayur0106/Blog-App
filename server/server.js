@@ -20,7 +20,7 @@ app.use(cookieParser());
 app.use('/uploads', express.static(__dirname + '/uploads'));
 
 //  mongoose.connect('mongodb+srv://blog:RD8paskYC8Ayj09u@cluster0.pflplid.mongodb.net/?retryWrites=true&w=majority');
-mongoose.connect('mongodb+srv://blog-pages:X54D8pZFqTJnx6h4@cluster0.4dpwnxm.mongodb.net/?retryWrites=true&w=majority');
+mongoose.connect('mongodb+srv://blog-pages:X54D8pZFqTJnx6h4@cluster0.4dpwnxm.mongodb.net/?retryWrites=true&w=majority')
 
 
 
@@ -110,16 +110,16 @@ app.put('/post',uploadMiddleware.single('file'), async (req,res) => {
     if (!isAuthor) {
       return res.status(400).json('you are not the author');
     }
-    await postDoc.update({
-      title,
-      summary,
-      content,
-      cover: newPath ? newPath : postDoc.cover,
-    });
+    postDoc.title = title;
+    postDoc.summary = summary;
+    postDoc.content = content;
+    if (newPath) {
+      postDoc.cover = newPath;
+    }
+    await postDoc.save();
 
     res.json(postDoc);
   });
-
 });
 
 app.get('/post', async (req,res) => {
@@ -137,4 +137,7 @@ app.get('/post/:id', async (req, res) => {
   res.json(postDoc);
 })
 
-app.listen(4000);
+//app.listen(4000);
+app.listen(4000, ()=>  {
+    console.log('listening to port ',4000)
+})
